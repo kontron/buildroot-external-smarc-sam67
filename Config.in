@@ -1,0 +1,1 @@
+source "$BR2_EXTERNAL_SMARC_SAM67_PATH/package/k3conf/Config.in"
