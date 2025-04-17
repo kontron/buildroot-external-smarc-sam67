@@ -1,6 +1,7 @@
 config BR2_PACKAGE_K3CONF
 	bool "k3conf"
 	help
-	  A Powerful Diagnostic Tool for Texas Instruments K3 based Processors.
+	  A Powerful Diagnostic Tool for Texas Instruments K3
+	  based Processors.
 
 	  https://git.ti.com/cgit/k3conf/k3conf/
