@@ -1,0 +1,33 @@
+/dts-v1/;
+/plugin/;
+
+&wkup_i2c0 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	carrier_gpio0: tca9554@22 {
+		compatible = "nxp,pca9554";
+		reg = <0x22>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		status = "okay";
+	};
+
+	eeprom@57 {
+		compatible = "atmel,24c64";
+		reg = <0x57>;
+	};
+};
+
+&mcu_spi0 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	w25q128fw@0 {
+		compatible = "jedec,spi-nor";
+		m25p,fast-read;
+		spi-max-frequency = <100000000>;
+		reg = <0>;
+	};
+};

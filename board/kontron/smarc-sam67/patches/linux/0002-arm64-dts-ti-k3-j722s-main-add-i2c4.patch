@@ -1,0 +1,51 @@
+From de17f9c7731d995cfe43a090586131c2095cbb86 Mon Sep 17 00:00:00 2001
+From: Heiko Thiery <heiko.thiery@gmail.com>
+Date: Mon, 5 May 2025 07:42:45 +0200
+Subject: [PATCH 2/3] arm64: dts: ti: k3-j722s-main: add i2c4
+
+This is taken from linux-smarc-sam67 repo.
+
+Signed-off-by: Heiko Thiery <heiko.thiery@gmail.com>
+---
+ arch/arm64/boot/dts/ti/k3-j722s-main.dtsi | 12 ++++++++++++
+ arch/arm64/boot/dts/ti/k3-j722s.dtsi      |  1 +
+ 2 files changed, 13 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/ti/k3-j722s-main.dtsi b/arch/arm64/boot/dts/ti/k3-j722s-main.dtsi
+index d3411f80c970..93d6484df4d6 100644
+--- a/arch/arm64/boot/dts/ti/k3-j722s-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j722s-main.dtsi
+@@ -349,6 +349,18 @@ dphy3: phy@30170000 {
+ 		status = "disabled";
+ 	};
+ 
++	main_i2c4: i2c@fe80000 {
++		compatible = "ti,am64-i2c", "ti,omap4-i2c";
++		reg = <0x00 0x0fe80000 0x00 0x100>;
++		interrupts-extended = <&main_gpio_intr 178>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		power-domains = <&k3_pds 257 TI_SCI_PD_EXCLUSIVE>;
++		clocks = <&k3_clks 257 2>;
++		clock-names = "fck";
++		status = "disabled";
++	};
++
+ 	main_r5fss0: r5fss@78400000 {
+ 		compatible = "ti,am62-r5fss";
+ 		#address-cells = <1>;
+diff --git a/arch/arm64/boot/dts/ti/k3-j722s.dtsi b/arch/arm64/boot/dts/ti/k3-j722s.dtsi
+index 747f989a54a4..afbe3cafbe51 100644
+--- a/arch/arm64/boot/dts/ti/k3-j722s.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j722s.dtsi
+@@ -156,6 +156,7 @@ cbass_main: bus@f0000 {
+ 			 <0x00 0x0fd80000 0x00 0x0fd80000 0x00 0x00080000>, /* GPU */
+ 			 <0x00 0x0fd20000 0x00 0x0fd20000 0x00 0x00000100>, /* JPEGENC0_CORE */
+ 			 <0x00 0x0fd20200 0x00 0x0fd20200 0x00 0x00000200>, /* JPEGENC0_CORE_MMU */
++			 <0x00 0x0fe80000 0x00 0x0fe80000 0x00 0x00000100>, /* I2C4 */
+ 			 <0x00 0x20000000 0x00 0x20000000 0x00 0x0a008000>, /* Third peripheral window */
+ 			 <0x00 0x30040000 0x00 0x30040000 0x00 0x00080000>, /* PRUSS-M */
+ 			 <0x00 0x301C0000 0x00 0x301C0000 0x00 0x00001000>, /* DPHY-TX */
+-- 
+2.39.5
+
