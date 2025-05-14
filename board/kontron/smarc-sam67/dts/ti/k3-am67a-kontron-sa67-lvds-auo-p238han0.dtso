@@ -1,7 +1,7 @@
 /dts-v1/;
 /plugin/;
 
-/ {
+&{/} {
 	panel {
 		compatible = "panel-lvds";
 		power-supply = <&vcc_lcd0_panel>;

@@ -1,7 +1,7 @@
 /dts-v1/;
 /plugin/;
 
-/ {
+&{/} {
 	panel {
 		compatible = "evervision,vgg644804";
 		power-supply = <&vcc_lcd0_panel>;
