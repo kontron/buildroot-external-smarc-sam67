@@ -1,6 +1,8 @@
 /dts-v1/;
 /plugin/;
 
+#include <dt-bindings/gpio/gpio.h>
+
 &lcd0_backlight {
 	/*
 	 * The LCD0_BKLT_EN signal is defined by carrier active HIGH, but the
