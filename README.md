@@ -29,7 +29,7 @@ appropriate defconfig in the `buildroot-external-smarc-sal28/configs`
 directory.
 
 ```
-git clone git://git.busybox.net/buildroot -b 2024.11.1
+git clone https://gitlab.com/buildroot.org/buildroot.git -b 2024.11.1
 git clone https://github.com/kontron/buildroot-external-smarc-sam67.git
 mkdir build
 cd build
