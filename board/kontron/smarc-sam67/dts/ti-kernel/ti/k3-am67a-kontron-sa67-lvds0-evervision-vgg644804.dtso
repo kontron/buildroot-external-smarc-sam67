@@ -47,13 +47,11 @@
 };
 
 &lcd0_backlight {
-	pwms = <&epwm1 0 8333333 0>;
 	status = "okay";
+	pwms = <&epwm1 0 8333333 0>;
 };
 
 &oldi0_dss0 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&oldi0_pins_default>;
 	status = "okay";
 };
 

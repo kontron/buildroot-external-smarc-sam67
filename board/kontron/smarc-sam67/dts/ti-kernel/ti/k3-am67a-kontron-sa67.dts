@@ -249,6 +249,18 @@
 	};
 };
 
+&audio_refclk0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&audio_refclk0_pins_default>;
+	status = "disabled";
+};
+
+&audio_refclk1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&audio_refclk1_pins_default>;
+	status = "disabled";
+};
+
 &cpsw3g {
 	pinctrl-names = "default";
 	pinctrl-0 = <&cpsw3g_pins_default>, <&rgmii1_pins_default>,
@@ -531,11 +543,24 @@
 		compatible = "atmel,24c128";
 		reg = <0x50>;
 		pagesize = <32>;
+		vcc-supply = <&vcc_1p8_s0>;
 		status = "reserved";
 	};
 };
 
 &main_pmx0 {
+	audio_refclk0_pins_default: audio-refclk0-default-pins {
+		pinctrl-single,pins = <
+			J722S_IOPAD(0x0c4, PIN_OUTPUT, 5)		/* (W23) VOUT0_DATA3.AUDIO_EXT_REFCLK0 */
+		>;
+	};
+
+	audio_refclk1_pins_default: audio-refclk1-default-pins {
+		pinctrl-single,pins = <
+			J722S_IOPAD(0x0a0, PIN_OUTPUT, 1)		/* (N24) GPMC0_WPn.AUDIO_EXT_REFCLK1 */
+		>;
+	};
+
 	cpsw3g_mdio_pins_default: cpsw3g-mdio-default-pins {
 		pinctrl-single,pins = <
 			J722S_IOPAD(0x160, PIN_OUTPUT, 0)	/* (AC24) MDIO0_MDC */
@@ -864,6 +889,7 @@
 		compatible = "atmel,24c32";
 		reg = <0x50>;
 		pagesize = <32>;
+		vcc-supply = <&vcc_1p8_s0>;
 	};
 };
 

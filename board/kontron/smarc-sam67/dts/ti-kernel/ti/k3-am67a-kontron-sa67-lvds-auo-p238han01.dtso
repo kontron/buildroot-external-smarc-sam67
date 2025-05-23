@@ -3,30 +3,10 @@
 
 &{/} {
 	panel {
-		compatible = "panel-lvds";
+		compatible = "auo,p238han01";
 		power-supply = <&vcc_lcd0_panel>;
 		backlight = <&lcd0_backlight>;
-
-		width-mm = <527>;
-		height-mm = <296>;
-		data-mapping = "vesa-24";
 		status = "okay";
-
-		panel-timing {
-			clock-frequency = <142400000>;
-			hactive = <1920>;
-			vactive = <1080>;
-			hsync-len = <30>;
-			hfront-porch = <20>;
-			hback-porch = <130>;
-			vfront-porch = <10>;
-			vback-porch = <35>;
-			vsync-len = <5>;
-			hsync-active = <0>;
-			vsync-active = <0>;
-			de-active = <1>;
-			pixelclk-active = <0>;
-		};
 
 		/*
 		* Note that the OLDI TX 0 transmits the odd set of pixels
@@ -69,7 +49,6 @@
 	#address-cells = <1>;
 	#size-cells = <0>;
 
-	/* VP1: Output to OLDI */
 	port@0 {
 		reg = <0>;
 		#address-cells = <1>;
@@ -92,19 +71,16 @@
 };
 
 &lcd0_backlight {
-	pwms = <&epwm1 0 8333333 0>;
 	status = "okay";
 };
 
 &oldi0_dss0 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&oldi0_pins_default>;
+	ti,companion-oldi = <&oldi1_dss0>;
 	status = "okay";
 };
 
 &oldi1_dss0 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&oldi1_pins_default>;
+	ti,secondary-oldi;
 	status = "okay";
 };
 
