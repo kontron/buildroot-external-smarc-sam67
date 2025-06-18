@@ -60,8 +60,13 @@
 	status = "okay";
 };
 
+&epwm2 {
+	status = "okay";
+};
+
 &mcasp0 {
 	status = "okay";
+	#sound-dai-cells = <0>;
 };
 
 &mcu_i2c0 {
@@ -109,4 +114,8 @@
 		m25p,fast-read;
 		vcc-supply = <&cvcc_1p8v_s0>;
 	};
+};
+
+&pwm_fan {
+	status = "okay";
 };

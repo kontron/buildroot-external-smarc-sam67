@@ -74,12 +74,36 @@
 
 	};
 
+	connector-2 {
+		compatible = "dp-connector";
+		label = "DP_0";
+		type = "full-size";
+		hpd-gpios = <&edp_bridge 2 GPIO_ACTIVE_HIGH>;
+
+		port {
+			dp_connector_in: endpoint {
+				remote-endpoint = <&edp_bridge_out>;
+			};
+		};
+	};
+
 	memory@80000000 {
 		/* 4G RAM */
 		reg = <0x00000000 0x80000000 0x00000000 0x80000000>,
 		      <0x00000008 0x80000000 0x00000000 0x80000000>;
 		device_type = "memory";
 		bootph-pre-ram;
+	};
+
+	pwm_fan: pwm-fan {
+		compatible = "pwm-fan";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pwm_fan_pins_default>;
+		interrupts-extended = <&main_gpio1 7 IRQ_TYPE_EDGE_FALLING>;
+		#cooling-cells = <2>;
+		pwms = <&epwm2 1 4000000 0>;
+		cooling-levels = <1 128 192 255>;
+		status = "disabled";
 	};
 
 	reserved_memory: reserved-memory {
@@ -170,9 +194,8 @@
 		regulator-min-microvolt = <1800000>;
 		regulator-max-microvolt = <3300000>;
 		vin-supply = <&vcc_3p3_s0>;
-		/* XXX SDIO_PWR_EN controlled by sdio */
-		//enable-gpios = <&main_gpio0 7 GPIO_ACTIVE_HIGH>;
 		regulator-boot-on;
+		enable-gpios = <&main_gpio0 7 GPIO_ACTIVE_HIGH>;
 		gpios = <&main_gpio0 8 GPIO_ACTIVE_HIGH>;
 		states = <3300000 0x0>,
 			 <1800000 0x1>;
@@ -187,7 +210,6 @@
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 		vin-supply = <&vcc_3p3_s5>;
-		regulator-boot-on;
 		enable-active-high;
 		interrupts-extended = <&main_gpio1 30 IRQ_TYPE_EDGE_FALLING>;
 		bootph-all;
@@ -199,10 +221,11 @@
 		regulator-min-microvolt = <1100000>;
 		regulator-max-microvolt = <1100000>;
 		vin-supply = <&vcc_1p1_s3>;
-		/* XXX shared with vcc_0p85_vcore_s0 */
-		//gpios = <&tps652g1 4 GPIO_ACTIVE_HIGH>;
 		regulator-always-on;
 		regulator-boot-on;
+		enable-active-high;
+		/* shared with V_0V75_0V85_CORE_S0 */
+		gpios = <&tps652g1 4 GPIO_ACTIVE_HIGH>;
 		bootph-all;
 	};
 
@@ -285,13 +308,70 @@
 &cpsw_port1 {
 	phy-connection-type = "rgmii-id";
 	phy-handle = <&phy0>;
+	nvmem-cells = <&base_mac_address 0>;
+	nvmem-cell-names = "mac-address";
 	status = "okay";
 };
 
 &cpsw_port2 {
 	phy-connection-type = "rgmii-id";
 	phy-handle = <&phy1>;
+	nvmem-cells = <&base_mac_address 1>;
+	nvmem-cell-names = "mac-address";
 	status = "okay";
+};
+
+&dphy_tx0 {
+	status = "okay";
+};
+
+&dsi0 {
+	status = "okay";
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			reg = <0>;
+
+			dsi0_out: endpoint {
+				remote-endpoint = <&edp_bridge_in>;
+			};
+		};
+
+		port@1 {
+			reg = <1>;
+
+			dsi0_in: endpoint {
+				remote-endpoint = <&dss1_dpi1_out>;
+			};
+		};
+	};
+};
+
+&dss1 {
+	status = "okay";
+	assigned-clocks = <&k3_clks 232 0>,
+			  <&k3_clks 232 4>;
+	assigned-clock-parents = <&k3_clks 232 1>,
+				 <&k3_clks 232 5>;
+};
+
+&dss1_ports {
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	/* DSS1-VP1: DSI Output */
+	port@1 {
+		reg = <1>;
+
+		dss1_dpi1_out: endpoint {
+			remote-endpoint = <&dsi0_in>;
+		};
+	};
 };
 
 &main_gpio0 {
@@ -336,23 +416,21 @@
 
 		no-hpd;
 
-		status = "disabled";
-
 		ports {
 			#address-cells = <1>;
 			#size-cells = <0>;
 
 			port@0 {
 				reg = <0>;
-				endpoint {
-					//remote-endpoint = <&dsi0_out>;
+				edp_bridge_in: endpoint {
+					remote-endpoint = <&dsi0_out>;
 				};
 			};
 
 			port@1 {
 				reg = <1>;
-				sn65dsi86_out: endpoint {
-					remote-endpoint = <&panel_in_edp>;
+				edp_bridge_out: endpoint {
+					remote-endpoint = <&dp_connector_in>;
 				};
 			};
 		};
@@ -365,8 +443,7 @@
 				status = "disabled";
 
 				port {
-					panel_in_edp: endpoint {
-						remote-endpoint = <&sn65dsi86_out>;
+					edp_panel_in: endpoint {
 					};
 				};
 			};
@@ -719,6 +796,13 @@
 	pmic_irq_pins_default: pmic-irq-default-pins {
 		pinctrl-single,pins = <
 			J722S_IOPAD(0x090, PIN_INPUT, 7)	/* (P27) GPMC0_BE0n_CLE.GPIO0_35 */
+		>;
+	};
+
+	pwm_fan_pins_default: pwm-fan-default-pins {
+		pinctrl-single,pins = <
+			J722S_IOPAD(0x1ec, PIN_OUTPUT, 8)	/* (A22) I2C1_SDA.EHRPWM2_B */
+			J722S_IOPAD(0x194, PIN_INPUT, 0)	/* (A25) MCASP0_AXR3.GPIO1_7 */
 		>;
 	};
 
