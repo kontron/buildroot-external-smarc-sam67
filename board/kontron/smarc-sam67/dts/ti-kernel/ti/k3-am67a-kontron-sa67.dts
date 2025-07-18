@@ -388,7 +388,7 @@
 &main_i2c0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&main_i2c0_pins_default>;
-	clock-frequency = <400000>;
+	clock-frequency = <100000>;
 	status = "okay";
 	bootph-all;
 
@@ -434,26 +434,13 @@
 				};
 			};
 		};
-
-		aux-bus {
-			edp_panel: panel {
-				power-supply = <&vcc_lcd0_panel>;
-				backlight = <&lcd0_backlight>;
-				hpd-gpios = <&edp_bridge 2 GPIO_ACTIVE_HIGH>;
-				status = "disabled";
-
-				port {
-					edp_panel_in: endpoint {
-					};
-				};
-			};
-		};
 	};
 
 	tps652g1: pmic@44 {
 		compatible = "ti,tps652g1";
 		reg = <0x44>;
 		ti,primary-pmic;
+		ti,power-button;
 		system-power-controller;
 
 		gpio-controller;
@@ -1068,7 +1055,6 @@
 		cdns,tchsh-ns = <60>;
 		cdns,tslch-ns = <60>;
 		cdns,read-delay = <3>;
-		vcc-supply = <&vcc_1p8_s0>;
 		bootph-all;
 
 		partitions {
@@ -1134,6 +1120,14 @@
 &serdes_ln_ctrl {
 	idle-states = <J722S_SERDES0_LANE0_USB>,
 		      <J722S_SERDES1_LANE0_PCIE0_LANE0>;
+};
+
+&serdes_wiz0 {
+	status = "okay";
+};
+
+&serdes_wiz1 {
+	status = "okay";
 };
 
 &serdes0 {
