@@ -1,0 +1,109 @@
+From 187ba71ff1c1ba9ec53574f57c32c929dcb73b6e Mon Sep 17 00:00:00 2001
+From: Heiko Thiery <heiko.thiery@gmail.com>
+Date: Wed, 20 Aug 2025 13:55:48 +0200
+Subject: [PATCH] fix build error due to '-Wincompatible-pointer-types' check
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+input-event-daemon.c: In function ‘main’:
+input-event-daemon.c:864:21: error: passing argument 2 of ‘signal’ from incompatible pointer type [-Wincompatible-pointer-types]
+  864 |     signal(SIGTERM, daemon_clean);
+      |                     ^~~~~~~~~~~~
+      |                     |
+      |                     void (*)(void)
+In file included from /home/hthiery/sources/kontron/sa67/out/host/aarch64-buildroot-linux-gnu/sysroot/usr/include/sys/wait.h:36,
+                 from input-event-daemon.c:13:
+/home/hthiery/sources/kontron/sa67/out/host/aarch64-buildroot-linux-gnu/sysroot/usr/include/signal.h:88:57: note: expected ‘__sighandler_t’ {aka ‘void (*)(int)’} but argument is of type ‘void (*)(void)’
+   88 | extern __sighandler_t signal (int __sig, __sighandler_t __handler)
+      |                                          ~~~~~~~~~~~~~~~^~~~~~~~~
+input-event-daemon.c:777:6: note: ‘daemon_clean’ declared here
+  777 | void daemon_clean() {
+      |      ^~~~~~~~~~~~
+/home/hthiery/sources/kontron/sa67/out/host/aarch64-buildroot-linux-gnu/sysroot/usr/include/signal.h:72:16: note: ‘__sighandler_t’ declared here
+   72 | typedef void (*__sighandler_t) (int);
+      |                ^~~~~~~~~~~~~~
+input-event-daemon.c:865:21: error: passing argument 2 of ‘signal’ from incompatible pointer type [-Wincompatible-pointer-types]
+  865 |     signal(SIGINT,  daemon_clean);
+      |                     ^~~~~~~~~~~~
+      |                     |
+      |                     void (*)(void)
+/home/hthiery/sources/kontron/sa67/out/host/aarch64-buildroot-linux-gnu/sysroot/usr/include/signal.h:88:57: note: expected ‘__sighandler_t’ {aka ‘void (*)(int)’} but argument is of type ‘void (*)(void)’
+   88 | extern __sighandler_t signal (int __sig, __sighandler_t __handler)
+      |                                          ~~~~~~~~~~~~~~~^~~~~~~~~
+input-event-daemon.c:777:6: note: ‘daemon_clean’ declared here
+  777 | void daemon_clean() {
+      |      ^~~~~~~~~~~~
+/home/hthiery/sources/kontron/sa67/out/host/aarch64-buildroot-linux-gnu/sysroot/usr/include/signal.h:72:16: note: ‘__sighandler_t’ declared here
+   72 | typedef void (*__sighandler_t) (int);
+      |                ^~~~~~~~~~~~~~
+make[2]: *** [Makefile:4: input-event-daemon] Error 1
+
+Signed-off-by: Heiko Thiery <heiko.thiery@gmail.com>
+---
+ input-event-daemon.c | 12 ++++++++++--
+ input-event-daemon.h |  2 +-
+ 2 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/input-event-daemon.c b/input-event-daemon.c
+index 27694e8..a84e7c4 100644
+--- a/input-event-daemon.c
++++ b/input-event-daemon.c
+@@ -2,6 +2,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <unistd.h>
++#include <signal.h>
+ 
+ #include <ctype.h>
+ #include <getopt.h>
+@@ -774,9 +775,11 @@ static void daemon_exec(const char *command) {
+     return;
+ }
+ 
+-void daemon_clean() {
++void daemon_clean(int signalno) {
+     int i, j;
+ 
++	(void)signalno;
++
+     if(conf.verbose) {
+         fprintf(stderr, "\n"PROGRAM": Exiting...\n");
+     }
+@@ -818,6 +821,11 @@ void daemon_clean() {
+     _exit(EXIT_SUCCESS);
+ }
+ 
++void daemon_clean_atexit(void) {
++	daemon_clean(0);
++}
++
++
+ static void daemon_print_help() {
+     printf("Usage:\n\n"
+             "    "PROGRAM" "
+@@ -860,7 +868,7 @@ int main(int argc, char *argv[]) {
+ 
+     daemon_init();
+ 
+-    atexit(daemon_clean);
++    atexit(daemon_clean_atexit);
+     signal(SIGTERM, daemon_clean);
+     signal(SIGINT,  daemon_clean);
+ 
+diff --git a/input-event-daemon.h b/input-event-daemon.h
+index 3dcb310..8934cf4 100644
+--- a/input-event-daemon.h
++++ b/input-event-daemon.h
+@@ -111,7 +111,7 @@ static char         *config_trim_string(char *str);
+ void        daemon_init();
+ void        daemon_start_listener();
+ static void daemon_exec(const char *command);
+-void        daemon_clean();
++void        daemon_clean(int signalno);
+ static void daemon_print_help();
+ static void daemon_print_version();
+ 
+-- 
+2.39.5
+
