@@ -1,0 +1,4 @@
+config BR2_PACKAGE_MSPM0FLASH
+	bool "mspm0flash"
+	help
+	  Flash and verify firmware binary to a TI MSPM0 mirocontroller.
