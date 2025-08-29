@@ -1,0 +1,14 @@
+#!/bin/sh
+
+start_into_bsl() {
+	i2cset -fy 2 0x4a 0xfe 0xa8 2>/dev/null || true
+}
+
+case ${1} in
+	init)
+		start_into_bsl
+		;;
+
+	exit)
+		;;
+esac
