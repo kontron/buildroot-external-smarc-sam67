@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-MSPM0FLASH_VERSION = e37ad3cc9a063fe8ad0097a1fc54c8b83eb5fac9
+MSPM0FLASH_VERSION = 36be0096f1964251193ef6907617f6bd8d61fdfe
 MSPM0FLASH_SITE = https://github.com/kontron/mspm0flash
 MSPM0FLASH_SITE_METHOD = git
 MSPM0FLASH_LICENSE = BSD-2-Clause
