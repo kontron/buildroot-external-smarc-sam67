@@ -1,0 +1,23 @@
+config BR2_PACKAGE_MESA_PVR
+	bool "mesa-pvr"
+	select BR2_PACKAGE_EXPAT
+	select BR2_PACKAGE_LIBDRM
+	select BR2_PACKAGE_WAYLAND_PROTOCOLS if BR2_PACKAGE_WAYLAND
+	select BR2_PACKAGE_ZLIB
+	select BR2_PACKAGE_HAS_LIBGBM
+	select BR2_PACKAGE_HAS_LIBEGL
+	select BR2_PACKAGE_HAS_LIBGLES
+	help
+	  Mesa 3D, an open-source implementation of the OpenGL
+	  specification.
+
+	  http://mesa3d.org
+
+config BR2_PACKAGE_PROVIDES_LIBGBM
+	default "mesa-pvr"
+
+config BR2_PACKAGE_PROVIDES_LIBEGL
+	default "mesa-pvr"
+
+config BR2_PACKAGE_PROVIDES_LIBGLES
+        default "mesa-pvr"

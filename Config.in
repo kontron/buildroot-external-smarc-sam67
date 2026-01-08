@@ -1,2 +1,5 @@
 source "$BR2_EXTERNAL_SMARC_SAM67_PATH/package/k3conf/Config.in"
 source "$BR2_EXTERNAL_SMARC_SAM67_PATH/package/mspm0flash/Config.in"
+source "$BR2_EXTERNAL_SMARC_SAM67_PATH/package/ti-img-rogue-driver/Config.in"
+source "$BR2_EXTERNAL_SMARC_SAM67_PATH/package/ti-img-rogue-umlibs/Config.in"
+source "$BR2_EXTERNAL_SMARC_SAM67_PATH/package/mesa-pvr/Config.in"
